@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/main_navigation.dart';
 
-void main() {
-  runApp(const SmartVowApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
+
+  runApp(const ProviderScope(child: SmartVowApp()));
 }
 
 class SmartVowApp extends StatelessWidget {

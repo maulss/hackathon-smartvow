@@ -49,22 +49,19 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
       ),
-      iconTheme: IconThemeData(
-        color: AppColors.textPrimary,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: AppColors.textPrimary, size: 24),
     ),
 
     // Card Theme
-    cardTheme: CardTheme(
+    cardTheme: const CardThemeData(
       elevation: 2,
       color: AppColors.surface,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       shadowColor: AppColors.shadowLight,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
 
     // Elevated Button Theme
@@ -76,9 +73,7 @@ class AppTheme {
         disabledBackgroundColor: AppColors.neutral200,
         disabledForegroundColor: AppColors.neutral400,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -93,9 +88,7 @@ class AppTheme {
         foregroundColor: AppColors.primary,
         side: const BorderSide(color: AppColors.primary, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -142,14 +135,8 @@ class AppTheme {
         borderSide: const BorderSide(color: AppColors.error, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      hintStyle: const TextStyle(
-        color: AppColors.textTertiary,
-        fontSize: 14,
-      ),
-      labelStyle: const TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 14,
-      ),
+      hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 14),
+      labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
     ),
 
     // Floating Action Button Theme
@@ -164,32 +151,24 @@ class AppTheme {
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.neutral100,
       deleteIconColor: AppColors.textSecondary,
-      labelStyle: const TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 14,
-      ),
+      labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
 
     // Dialog Theme
-    dialogTheme: DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: AppColors.surface,
       elevation: 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
-      titleTextStyle: const TextStyle(
+      titleTextStyle: TextStyle(
         color: AppColors.textPrimary,
         fontSize: 20,
         fontWeight: FontWeight.w600,
       ),
-      contentTextStyle: const TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 14,
-      ),
+      contentTextStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
     ),
 
     // Bottom Sheet Theme
@@ -296,10 +275,7 @@ class AppTheme {
     ),
 
     // Icon Theme
-    iconTheme: const IconThemeData(
-      color: AppColors.textPrimary,
-      size: 24,
-    ),
+    iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 24),
 
     // Divider Theme
     dividerTheme: const DividerThemeData(
@@ -339,9 +315,7 @@ class AppTheme {
         }
         return AppColors.neutral300;
       }),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
 
     // Radio Theme
@@ -400,22 +374,19 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
       ),
-      iconTheme: IconThemeData(
-        color: AppColors.textOnDark,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: AppColors.textOnDark, size: 24),
     ),
 
     // Card Theme
-    cardTheme: CardTheme(
+    cardTheme: const CardThemeData(
       elevation: 4,
       color: AppColors.surfaceDark,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       shadowColor: AppColors.shadowDark,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
 
     // Elevated Button Theme (sama dengan light theme tapi warna disesuaikan)
@@ -427,9 +398,7 @@ class AppTheme {
         disabledBackgroundColor: AppColors.neutral700,
         disabledForegroundColor: AppColors.neutral500,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -444,9 +413,7 @@ class AppTheme {
         foregroundColor: AppColors.primaryLight,
         side: const BorderSide(color: AppColors.primaryLight, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -493,14 +460,8 @@ class AppTheme {
         borderSide: const BorderSide(color: AppColors.errorLight, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      hintStyle: const TextStyle(
-        color: AppColors.neutral500,
-        fontSize: 14,
-      ),
-      labelStyle: const TextStyle(
-        color: AppColors.neutral400,
-        fontSize: 14,
-      ),
+      hintStyle: const TextStyle(color: AppColors.neutral500, fontSize: 14),
+      labelStyle: const TextStyle(color: AppColors.neutral400, fontSize: 14),
     ),
 
     // Text Theme untuk Dark Mode
@@ -598,10 +559,7 @@ class AppTheme {
     ),
 
     // Icon Theme
-    iconTheme: const IconThemeData(
-      color: AppColors.textOnDark,
-      size: 24,
-    ),
+    iconTheme: const IconThemeData(color: AppColors.textOnDark, size: 24),
 
     // Divider Theme
     dividerTheme: const DividerThemeData(
