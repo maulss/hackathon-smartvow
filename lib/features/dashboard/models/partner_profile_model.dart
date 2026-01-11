@@ -160,14 +160,51 @@ abstract class VaultBalancesModel with _$VaultBalancesModel {
 abstract class DashboardDataModel with _$DashboardDataModel {
   const factory DashboardDataModel({
     required String userAddress,
-    PartnerProfileModel? partner,
+    PartnerProfileModel? partnerA,
+    PartnerProfileModel? partnerB,
     VaultBalancesModel? vaultBalances,
     List<VowModel>? activeVows,
+    List<CertificateModel>? certificates,
     required int totalAgreements,
     required int activeAgreements,
     required int assetNFTCount,
+    BigInt? totalEscrowLocked,
+    BigInt? partnerAContribution,
+    BigInt? partnerBContribution,
   }) = _DashboardDataModel;
 
   factory DashboardDataModel.fromJson(Map<String, dynamic> json) =>
       _$DashboardDataModelFromJson(json);
+}
+
+/// Certificate Model
+/// Model untuk data certificate/agreement
+@freezed
+abstract class CertificateModel with _$CertificateModel {
+  const factory CertificateModel({
+    required BigInt id,
+    required String partnerA,
+    required String partnerB,
+    required int status,
+    required DateTime createdAt,
+  }) = _CertificateModel;
+
+  factory CertificateModel.fromJson(Map<String, dynamic> json) =>
+      _$CertificateModelFromJson(json);
+}
+
+/// Shared Vault Info Model
+/// Model untuk info detail brankas bersama
+@freezed
+abstract class SharedVaultInfoModel with _$SharedVaultInfoModel {
+  const factory SharedVaultInfoModel({
+    required BigInt totalBalance,
+    required BigInt myContribution,
+    required BigInt partnerContribution,
+    required String partnerA,
+    required String partnerB,
+  }) = _SharedVaultInfoModel;
+
+  factory SharedVaultInfoModel.fromJson(Map<String, dynamic> json) =>
+      _$SharedVaultInfoModelFromJson(json);
 }

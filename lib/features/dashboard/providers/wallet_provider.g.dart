@@ -8,24 +8,24 @@ part of 'wallet_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Wallet Service Provider
+/// Wallet Service Provider - keepAlive to persist credentials
 
 @ProviderFor(walletService)
 const walletServiceProvider = WalletServiceProvider._();
 
-/// Wallet Service Provider
+/// Wallet Service Provider - keepAlive to persist credentials
 
 final class WalletServiceProvider
     extends $FunctionalProvider<WalletService, WalletService, WalletService>
     with $Provider<WalletService> {
-  /// Wallet Service Provider
+  /// Wallet Service Provider - keepAlive to persist credentials
   const WalletServiceProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'walletServiceProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -52,24 +52,24 @@ final class WalletServiceProvider
   }
 }
 
-String _$walletServiceHash() => r'b1a22d74a64eeb01a165c69e6b2b4285bc32caca';
+String _$walletServiceHash() => r'9bee8b73c6908aae28749d3e8d500e0c96cc9ba8';
 
-/// Wallet State Notifier
+/// Wallet State Notifier - keepAlive to persist state
 
 @ProviderFor(WalletNotifier)
 const walletProvider = WalletNotifierProvider._();
 
-/// Wallet State Notifier
+/// Wallet State Notifier - keepAlive to persist state
 final class WalletNotifierProvider
     extends $NotifierProvider<WalletNotifier, WalletState> {
-  /// Wallet State Notifier
+  /// Wallet State Notifier - keepAlive to persist state
   const WalletNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'walletProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -90,9 +90,9 @@ final class WalletNotifierProvider
   }
 }
 
-String _$walletNotifierHash() => r'72aed6dfd640c38649c521708f8d75451b0fb66a';
+String _$walletNotifierHash() => r'37b5828962e4327c61877ee326d4c9ca7f121732';
 
-/// Wallet State Notifier
+/// Wallet State Notifier - keepAlive to persist state
 
 abstract class _$WalletNotifier extends $Notifier<WalletState> {
   WalletState build();
@@ -141,7 +141,7 @@ final class DashboardDataProvider
   DashboardData create() => DashboardData();
 }
 
-String _$dashboardDataHash() => r'122480c471cd40352c95e146d2ea2adcaac0db08';
+String _$dashboardDataHash() => r'a4383628ee39c75e5ba53e0374a1ba1e9e622614';
 
 /// Dashboard Data Provider
 
@@ -165,51 +165,51 @@ abstract class _$DashboardData extends $AsyncNotifier<DashboardDataModel> {
   }
 }
 
-/// Partner Profile Provider
+/// Partners Profile Provider
 
-@ProviderFor(partnerProfile)
-const partnerProfileProvider = PartnerProfileProvider._();
+@ProviderFor(partnersProfile)
+const partnersProfileProvider = PartnersProfileProvider._();
 
-/// Partner Profile Provider
+/// Partners Profile Provider
 
-final class PartnerProfileProvider
+final class PartnersProfileProvider
     extends
         $FunctionalProvider<
-          AsyncValue<PartnerProfileModel?>,
-          PartnerProfileModel?,
-          FutureOr<PartnerProfileModel?>
+          AsyncValue<Map<String, PartnerProfileModel?>>,
+          Map<String, PartnerProfileModel?>,
+          FutureOr<Map<String, PartnerProfileModel?>>
         >
     with
-        $FutureModifier<PartnerProfileModel?>,
-        $FutureProvider<PartnerProfileModel?> {
-  /// Partner Profile Provider
-  const PartnerProfileProvider._()
+        $FutureModifier<Map<String, PartnerProfileModel?>>,
+        $FutureProvider<Map<String, PartnerProfileModel?>> {
+  /// Partners Profile Provider
+  const PartnersProfileProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'partnerProfileProvider',
+        name: r'partnersProfileProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$partnerProfileHash();
+  String debugGetCreateSourceHash() => _$partnersProfileHash();
 
   @$internal
   @override
-  $FutureProviderElement<PartnerProfileModel?> $createElement(
+  $FutureProviderElement<Map<String, PartnerProfileModel?>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<PartnerProfileModel?> create(Ref ref) {
-    return partnerProfile(ref);
+  FutureOr<Map<String, PartnerProfileModel?>> create(Ref ref) {
+    return partnersProfile(ref);
   }
 }
 
-String _$partnerProfileHash() => r'8d71bf06c3b4c95acdf73a2683169530506b4c63';
+String _$partnersProfileHash() => r'2a998c3b215a8910bd7540241e80fcef7ce040f9';
 
 /// Vault Balances Provider
 
@@ -299,4 +299,50 @@ final class UserVowsProvider
   }
 }
 
-String _$userVowsHash() => r'a5533a458b8d672e63c07aa13549ff9ca47dec6b';
+String _$userVowsHash() => r'a33c1a5c040865b6ef9fe872d476e1876676131c';
+
+/// Certificates Provider
+
+@ProviderFor(certificates)
+const certificatesProvider = CertificatesProvider._();
+
+/// Certificates Provider
+
+final class CertificatesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CertificateModel>>,
+          List<CertificateModel>,
+          FutureOr<List<CertificateModel>>
+        >
+    with
+        $FutureModifier<List<CertificateModel>>,
+        $FutureProvider<List<CertificateModel>> {
+  /// Certificates Provider
+  const CertificatesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'certificatesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$certificatesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CertificateModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CertificateModel>> create(Ref ref) {
+    return certificates(ref);
+  }
+}
+
+String _$certificatesHash() => r'56b3440f4acf3cd9e610c25aaa2c86f9c8e8349b';

@@ -71,34 +71,91 @@ Map<String, dynamic> _$VaultBalancesModelToJson(_VaultBalancesModel instance) =>
       'totalShared': instance.totalShared.toString(),
     };
 
-_DashboardDataModel _$DashboardDataModelFromJson(Map<String, dynamic> json) =>
-    _DashboardDataModel(
-      userAddress: json['userAddress'] as String,
-      partner: json['partner'] == null
-          ? null
-          : PartnerProfileModel.fromJson(
-              json['partner'] as Map<String, dynamic>,
-            ),
-      vaultBalances: json['vaultBalances'] == null
-          ? null
-          : VaultBalancesModel.fromJson(
-              json['vaultBalances'] as Map<String, dynamic>,
-            ),
-      activeVows: (json['activeVows'] as List<dynamic>?)
-          ?.map((e) => VowModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      totalAgreements: (json['totalAgreements'] as num).toInt(),
-      activeAgreements: (json['activeAgreements'] as num).toInt(),
-      assetNFTCount: (json['assetNFTCount'] as num).toInt(),
-    );
+_DashboardDataModel _$DashboardDataModelFromJson(
+  Map<String, dynamic> json,
+) => _DashboardDataModel(
+  userAddress: json['userAddress'] as String,
+  partnerA: json['partnerA'] == null
+      ? null
+      : PartnerProfileModel.fromJson(json['partnerA'] as Map<String, dynamic>),
+  partnerB: json['partnerB'] == null
+      ? null
+      : PartnerProfileModel.fromJson(json['partnerB'] as Map<String, dynamic>),
+  vaultBalances: json['vaultBalances'] == null
+      ? null
+      : VaultBalancesModel.fromJson(
+          json['vaultBalances'] as Map<String, dynamic>,
+        ),
+  activeVows: (json['activeVows'] as List<dynamic>?)
+      ?.map((e) => VowModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  certificates: (json['certificates'] as List<dynamic>?)
+      ?.map((e) => CertificateModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  totalAgreements: (json['totalAgreements'] as num).toInt(),
+  activeAgreements: (json['activeAgreements'] as num).toInt(),
+  assetNFTCount: (json['assetNFTCount'] as num).toInt(),
+  totalEscrowLocked: json['totalEscrowLocked'] == null
+      ? null
+      : BigInt.parse(json['totalEscrowLocked'] as String),
+  partnerAContribution: json['partnerAContribution'] == null
+      ? null
+      : BigInt.parse(json['partnerAContribution'] as String),
+  partnerBContribution: json['partnerBContribution'] == null
+      ? null
+      : BigInt.parse(json['partnerBContribution'] as String),
+);
 
 Map<String, dynamic> _$DashboardDataModelToJson(_DashboardDataModel instance) =>
     <String, dynamic>{
       'userAddress': instance.userAddress,
-      'partner': instance.partner,
+      'partnerA': instance.partnerA,
+      'partnerB': instance.partnerB,
       'vaultBalances': instance.vaultBalances,
       'activeVows': instance.activeVows,
+      'certificates': instance.certificates,
       'totalAgreements': instance.totalAgreements,
       'activeAgreements': instance.activeAgreements,
       'assetNFTCount': instance.assetNFTCount,
+      'totalEscrowLocked': instance.totalEscrowLocked?.toString(),
+      'partnerAContribution': instance.partnerAContribution?.toString(),
+      'partnerBContribution': instance.partnerBContribution?.toString(),
     };
+
+_CertificateModel _$CertificateModelFromJson(Map<String, dynamic> json) =>
+    _CertificateModel(
+      id: BigInt.parse(json['id'] as String),
+      partnerA: json['partnerA'] as String,
+      partnerB: json['partnerB'] as String,
+      status: (json['status'] as num).toInt(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+
+Map<String, dynamic> _$CertificateModelToJson(_CertificateModel instance) =>
+    <String, dynamic>{
+      'id': instance.id.toString(),
+      'partnerA': instance.partnerA,
+      'partnerB': instance.partnerB,
+      'status': instance.status,
+      'createdAt': instance.createdAt.toIso8601String(),
+    };
+
+_SharedVaultInfoModel _$SharedVaultInfoModelFromJson(
+  Map<String, dynamic> json,
+) => _SharedVaultInfoModel(
+  totalBalance: BigInt.parse(json['totalBalance'] as String),
+  myContribution: BigInt.parse(json['myContribution'] as String),
+  partnerContribution: BigInt.parse(json['partnerContribution'] as String),
+  partnerA: json['partnerA'] as String,
+  partnerB: json['partnerB'] as String,
+);
+
+Map<String, dynamic> _$SharedVaultInfoModelToJson(
+  _SharedVaultInfoModel instance,
+) => <String, dynamic>{
+  'totalBalance': instance.totalBalance.toString(),
+  'myContribution': instance.myContribution.toString(),
+  'partnerContribution': instance.partnerContribution.toString(),
+  'partnerA': instance.partnerA,
+  'partnerB': instance.partnerB,
+};

@@ -36,6 +36,31 @@ const String contractAbiJson = '''
             {
                 "indexed": true,
                 "internalType": "uint256",
+                "name": "certificateId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "partnerA",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "partnerB",
+                "type": "address"
+            }
+        ],
+        "name": "CertificateRegistered",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
                 "name": "vowId",
                 "type": "uint256"
             },
@@ -192,6 +217,12 @@ const String contractAbiJson = '''
         "inputs": [
             {
                 "indexed": true,
+                "internalType": "uint256",
+                "name": "certificateId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
                 "internalType": "address",
                 "name": "user",
                 "type": "address"
@@ -342,11 +373,16 @@ const String contractAbiJson = '''
             },
             {
                 "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
                 "name": "_escrowAmount",
                 "type": "uint256"
             }
         ],
-        "name": "activateWithSharedVault",
+        "name": "activateWithCertificateVault",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -403,6 +439,95 @@ const String contractAbiJson = '''
         "name": "approveAIClaim",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_vowId",
+                "type": "uint256"
+            }
+        ],
+        "name": "approveClaim",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "certificateActive",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "certificatePartnerA",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "certificatePartnerB",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "claimPercentage",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -492,48 +617,14 @@ const String contractAbiJson = '''
                 "internalType": "uint256",
                 "name": "_escrowAmount",
                 "type": "uint256"
-            }
-        ],
-        "name": "createVowAndLockEscrow",
-        "outputs": [
+            },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "_certificateId",
                 "type": "uint256"
             }
         ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_partnerB",
-                "type": "address"
-            },
-            {
-                "internalType": "string",
-                "name": "_metadataURI",
-                "type": "string"
-            },
-            {
-                "internalType": "enum SmartVow.ConditionType[]",
-                "name": "_conditionTypes",
-                "type": "uint8[]"
-            },
-            {
-                "internalType": "string[]",
-                "name": "_descriptions",
-                "type": "string[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_penaltyPercentages",
-                "type": "uint256[]"
-            }
-        ],
-        "name": "createVowComplete",
+        "name": "createVowWithCertificateEscrow",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -562,6 +653,66 @@ const String contractAbiJson = '''
         "name": "depositPersonal",
         "outputs": [],
         "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "depositToSharedVault",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getAllMySharedVaults",
+        "outputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "certificateIds",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "balances",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "myContributions",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getCertificatePartners",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "partnerA",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "partnerB",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -630,19 +781,126 @@ const String contractAbiJson = '''
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getUserVows",
+        "inputs": [],
+        "name": "getMyCertificates",
         "outputs": [
             {
                 "internalType": "uint256[]",
                 "name": "",
                 "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getMyPersonalVault",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getMySharedContribution",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getMyVaultSummary",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "personalBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalSharedBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "certificateCount",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getSharedVaultBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getSharedVaultInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "myContribution",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "partnerContribution",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "partnerA",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "partnerB",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -656,22 +914,12 @@ const String contractAbiJson = '''
                 "type": "address"
             }
         ],
-        "name": "getVaultBalances",
+        "name": "getUserVows",
         "outputs": [
             {
-                "internalType": "uint256",
-                "name": "personal",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "sharedContribution",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalShared",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
             }
         ],
         "stateMutability": "view",
@@ -754,6 +1002,30 @@ const String contractAbiJson = '''
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_certId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
+            }
+        ],
+        "name": "isCertificatePartner",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "mediator",
         "outputs": [
@@ -769,20 +1041,24 @@ const String contractAbiJson = '''
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "_certificateId",
+                "type": "uint256"
+            },
+            {
                 "internalType": "address",
-                "name": "",
+                "name": "_partnerA",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_partnerB",
                 "type": "address"
             }
         ],
-        "name": "personalVault",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
+        "name": "registerCertificate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -842,49 +1118,17 @@ const String contractAbiJson = '''
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "sharedVaultContribution",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "_vowId",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "_escrowAmount",
+                "name": "_certificateId",
                 "type": "uint256"
             }
         ],
-        "name": "signAndActivate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_vowId",
-                "type": "uint256"
-            }
-        ],
-        "name": "signAndActivateOnly",
+        "name": "signAndActivateWithCertificate",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -916,12 +1160,12 @@ const String contractAbiJson = '''
             },
             {
                 "internalType": "string",
-                "name": "_evidence",
+                "name": "",
                 "type": "string"
             },
             {
                 "internalType": "uint256",
-                "name": "_timestamp",
+                "name": "",
                 "type": "uint256"
             }
         ],
@@ -962,27 +1206,19 @@ const String contractAbiJson = '''
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "totalSharedVault",
-        "outputs": [
+        "inputs": [
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "_certificateId",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
+            },
             {
                 "internalType": "uint256",
                 "name": "_amount",
                 "type": "uint256"
             }
         ],
-        "name": "transferToShared",
+        "name": "transferToSharedVault",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

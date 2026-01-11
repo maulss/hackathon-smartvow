@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:math' as math;
 import '../../../core/constants/color_constant.dart';
-import '../../../core/providers/wallet_provider.dart';
-import '../../../core/models/wallet_model.dart';
+import '../providers/wallet_provider.dart';
+import '../models/wallet_model.dart';
+import '../models/partner_profile_model.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../widgets/connect_wallet_dialog.dart';
+import '../widgets/deposit_dialog.dart';
+import '../widgets/withdraw_dialog.dart';
+import '../widgets/transfer_to_shared_dialog.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -26,9 +31,7 @@ class DashboardPage extends ConsumerWidget {
             backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                ),
+                decoration: BoxDecoration(gradient: AppColors.primaryGradient),
                 child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
@@ -53,14 +56,19 @@ class DashboardPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     walletState.when(
-                                      initial: () => 'Silakan hubungkan wallet Anda',
-                                      connecting: () => 'Menghubungkan wallet...',
-                                      connected: (wallet) => '${wallet.address.substring(0, 6)}...${wallet.address.substring(wallet.address.length - 4)}',
+                                      initial: () =>
+                                          'Silakan hubungkan wallet Anda',
+                                      connecting: () =>
+                                          'Menghubungkan wallet...',
+                                      connected: (wallet) =>
+                                          '${wallet.address.substring(0, 6)}...${wallet.address.substring(wallet.address.length - 4)}',
                                       disconnected: () => 'Wallet terputus',
                                       error: (_) => 'Error koneksi wallet',
                                     ),
                                     style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.8),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.8,
+                                      ),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -71,27 +79,40 @@ class DashboardPage extends ConsumerWidget {
                               children: [
                                 // Connect/Disconnect Wallet Button
                                 walletState.when(
-                                  initial: () => _buildAppBarConnectButton(context),
+                                  initial: () =>
+                                      _buildAppBarConnectButton(context),
                                   connecting: () => const SizedBox(
                                     width: 24,
                                     height: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
                                     ),
                                   ),
                                   connected: (_) => IconButton(
-                                    icon: const Icon(Icons.logout, color: Colors.white),
+                                    icon: const Icon(
+                                      Icons.logout,
+                                      color: Colors.white,
+                                    ),
                                     onPressed: () {
-                                      ref.read(walletProvider.notifier).disconnectWallet();
+                                      ref
+                                          .read(walletProvider.notifier)
+                                          .disconnectWallet();
                                     },
                                     tooltip: 'Disconnect Wallet',
                                   ),
-                                  disconnected: () => _buildAppBarConnectButton(context),
-                                  error: (_) => _buildAppBarConnectButton(context),
+                                  disconnected: () =>
+                                      _buildAppBarConnectButton(context),
+                                  error: (_) =>
+                                      _buildAppBarConnectButton(context),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.refresh, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.refresh,
+                                    color: Colors.white,
+                                  ),
                                   onPressed: () {
                                     // Refresh dashboard data
                                     ref.invalidate(dashboardDataProvider);
@@ -106,7 +127,10 @@ class DashboardPage extends ConsumerWidget {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
@@ -148,8 +172,11 @@ class DashboardPage extends ConsumerWidget {
                         // Display personal vault balance from dashboard data
                         dashboardAsync.when(
                           data: (dashboardData) {
-                            final personalBalance = dashboardData.vaultBalances?.personal ?? BigInt.zero;
-                            final ethBalance = personalBalance.toDouble() / 1e18;
+                            final personalBalance =
+                                dashboardData.vaultBalances?.personal ??
+                                BigInt.zero;
+                            final ethBalance =
+                                personalBalance.toDouble() / 1e18;
                             return Row(
                               children: [
                                 Text(
@@ -248,13 +275,23 @@ class DashboardPage extends ConsumerWidget {
                       _buildIconButton(
                         Icons.file_download_outlined,
                         AppColors.error,
-                        () {},
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const WithdrawDialog(),
+                          );
+                        },
                       ),
                       const SizedBox(width: 8),
                       _buildIconButton(
                         Icons.file_upload_outlined,
                         AppColors.success,
-                        () {},
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const DepositDialog(),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -264,9 +301,12 @@ class DashboardPage extends ConsumerWidget {
                   // Stats Cards Row - Use real data from dashboard
                   dashboardAsync.when(
                     data: (dashboardData) {
-                      final sharedBalance = dashboardData.vaultBalances?.totalShared ?? BigInt.zero;
-                      final sharedEth = (sharedBalance.toDouble() / 1e18).toStringAsFixed(5);
-                      
+                      final sharedBalance =
+                          dashboardData.vaultBalances?.totalShared ??
+                          BigInt.zero;
+                      final sharedEth = (sharedBalance.toDouble() / 1e18)
+                          .toStringAsFixed(5);
+
                       return Column(
                         children: [
                           Row(
@@ -281,11 +321,14 @@ class DashboardPage extends ConsumerWidget {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: _buildStatsCard(
+                                child: _buildStatsCardWithAction(
                                   'BRANKAS BERSAMA',
                                   '$sharedEth ETH',
                                   Icons.folder_outlined,
                                   AppColors.info,
+                                  () {
+                                    _showTransferToSharedDialog(context);
+                                  },
                                 ),
                               ),
                             ],
@@ -305,7 +348,7 @@ class DashboardPage extends ConsumerWidget {
                               Expanded(
                                 child: _buildStatsCard(
                                   'ESCROW TERKUNCI',
-                                  '0.00000 ETH', // TODO: Add escrow data
+                                  '${((dashboardData.totalEscrowLocked ?? BigInt.zero).toDouble() / 1e18).toStringAsFixed(5)} ETH',
                                   Icons.lock_outline,
                                   AppColors.warning,
                                 ),
@@ -319,17 +362,37 @@ class DashboardPage extends ConsumerWidget {
                       children: [
                         Row(
                           children: [
-                            Expanded(child: ShimmerLoading(width: double.infinity, height: 100)),
+                            Expanded(
+                              child: ShimmerLoading(
+                                width: double.infinity,
+                                height: 100,
+                              ),
+                            ),
                             const SizedBox(width: 12),
-                            Expanded(child: ShimmerLoading(width: double.infinity, height: 100)),
+                            Expanded(
+                              child: ShimmerLoading(
+                                width: double.infinity,
+                                height: 100,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Expanded(child: ShimmerLoading(width: double.infinity, height: 100)),
+                            Expanded(
+                              child: ShimmerLoading(
+                                width: double.infinity,
+                                height: 100,
+                              ),
+                            ),
                             const SizedBox(width: 12),
-                            Expanded(child: ShimmerLoading(width: double.infinity, height: 100)),
+                            Expanded(
+                              child: ShimmerLoading(
+                                width: double.infinity,
+                                height: 100,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -405,37 +468,102 @@ class DashboardPage extends ConsumerWidget {
                   const SizedBox(height: 12),
                   dashboardAsync.when(
                     data: (dashboardData) {
-                      final sharedBalance = dashboardData.vaultBalances?.totalShared ?? BigInt.zero;
-                      final sharedEth = (sharedBalance.toDouble() / 1e18).toStringAsFixed(5);
+                      final sharedBalance =
+                          dashboardData.vaultBalances?.totalShared ??
+                          BigInt.zero;
+                      final sharedEth = (sharedBalance.toDouble() / 1e18)
+                          .toStringAsFixed(5);
                       return _buildSharedVaultGrowthCard(sharedEth);
                     },
-                    loading: () => const ShimmerLoading(width: double.infinity, height: 200),
+                    loading: () => const ShimmerLoading(
+                      width: double.infinity,
+                      height: 200,
+                    ),
                     error: (_, __) => _buildSharedVaultGrowthCard('0.00000'),
                   ),
 
                   const SizedBox(height: 24),
 
                   // Distribusi Harta - Use real data
-                  _buildSectionTitle('Distribusi Harta (ETH)', null),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return Row(
+                        children: [
+                          Text(
+                            'Distribusi Harta (ETH)',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.refresh, size: 20),
+                            onPressed: () {
+                              // Refresh dashboard data
+                              ref.invalidate(dashboardDataProvider);
+                            },
+                            color: AppColors.textSecondary,
+                            tooltip: 'Refresh data distribusi',
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                   dashboardAsync.when(
                     data: (dashboardData) {
-                      final sharedBalance = dashboardData.vaultBalances?.totalShared ?? BigInt.zero;
-                      final sharedEth = (sharedBalance.toDouble() / 1e18).toStringAsFixed(4);
-                      final partnerAContribution = dashboardData.vaultBalances?.sharedContribution ?? BigInt.zero;
-                      final partnerAEth = (partnerAContribution.toDouble() / 1e18).toStringAsFixed(4);
-                      
+                      final sharedBalance =
+                          dashboardData.vaultBalances?.totalShared ??
+                          BigInt.zero;
+                      final sharedEth = (sharedBalance.toDouble() / 1e18)
+                          .toStringAsFixed(4);
+                      final partnerAContribution =
+                          dashboardData.partnerAContribution ?? BigInt.zero;
+                      final partnerBContribution =
+                          dashboardData.partnerBContribution ?? BigInt.zero;
+                      final partnerAEth =
+                          (partnerAContribution.toDouble() / 1e18)
+                              .toStringAsFixed(4);
+                      final partnerBEth =
+                          (partnerBContribution.toDouble() / 1e18)
+                              .toStringAsFixed(4);
+
+                      // Calculate percentages
+                      final totalContributions =
+                          partnerAContribution + partnerBContribution;
+                      final partnerAPercentage =
+                          totalContributions > BigInt.zero
+                          ? (partnerAContribution.toDouble() /
+                                totalContributions.toDouble() *
+                                100)
+                          : 50.0;
+                      final partnerBPercentage =
+                          totalContributions > BigInt.zero
+                          ? (partnerBContribution.toDouble() /
+                                totalContributions.toDouble() *
+                                100)
+                          : 50.0;
+
                       return _buildDistribusiHartaCard(
                         totalShared: sharedEth,
                         partnerAAmount: partnerAEth,
-                        partnerBAmount: '0.0000', // TODO: Calculate partner B contribution
+                        partnerBAmount: partnerBEth,
+                        partnerAPercentage: partnerAPercentage,
+                        partnerBPercentage: partnerBPercentage,
                       );
                     },
-                    loading: () => const ShimmerLoading(width: double.infinity, height: 400),
+                    loading: () => const ShimmerLoading(
+                      width: double.infinity,
+                      height: 400,
+                    ),
                     error: (_, __) => _buildDistribusiHartaCard(
                       totalShared: '0.0000',
                       partnerAAmount: '0.0000',
                       partnerBAmount: '0.0000',
+                      partnerAPercentage: 50.0,
+                      partnerBPercentage: 50.0,
                     ),
                   ),
 
@@ -447,19 +575,43 @@ class DashboardPage extends ConsumerWidget {
                       'Semua Perjanjian',
                       '${dashboardData.totalAgreements} total',
                     ),
-                    loading: () => _buildSectionTitle('Semua Perjanjian', '... total'),
-                    error: (_, __) => _buildSectionTitle('Semua Perjanjian', '0 total'),
+                    loading: () =>
+                        _buildSectionTitle('Semua Perjanjian', '... total'),
+                    error: (_, __) =>
+                        _buildSectionTitle('Semua Perjanjian', '0 total'),
                   ),
                   const SizedBox(height: 12),
                   dashboardAsync.when(
                     data: (dashboardData) {
-                      if (dashboardData.activeVows == null || dashboardData.activeVows!.isEmpty) {
-                        return _buildEmptyPerjanjianCard();
-                      }
-                      // TODO: Build list of vows
-                      return _buildEmptyPerjanjianCard();
+                      // Show ALL vows, not just active ones
+                      final allVows = ref.watch(userVowsProvider);
+
+                      return allVows.when(
+                        data: (vows) {
+                          if (vows.isEmpty) {
+                            return _buildEmptyPerjanjianCard();
+                          }
+                          // Build list of ALL vows (including drafts)
+                          return Column(
+                            children: vows.map((vow) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _buildVowCard(vow),
+                              );
+                            }).toList(),
+                          );
+                        },
+                        loading: () => const ShimmerLoading(
+                          width: double.infinity,
+                          height: 150,
+                        ),
+                        error: (_, __) => _buildEmptyPerjanjianCard(),
+                      );
                     },
-                    loading: () => const ShimmerLoading(width: double.infinity, height: 150),
+                    loading: () => const ShimmerLoading(
+                      width: double.infinity,
+                      height: 150,
+                    ),
                     error: (_, __) => _buildEmptyPerjanjianCard(),
                   ),
 
@@ -478,7 +630,12 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 18),
@@ -487,9 +644,7 @@ class DashboardPage extends ConsumerWidget {
         backgroundColor: color,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -510,7 +665,12 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatsCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -533,6 +693,76 @@ class DashboardPage extends ConsumerWidget {
                 ),
                 child: Icon(Icons.trending_up, color: color, size: 12),
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCardWithAction(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    VoidCallback? onActionTap,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.neutral200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const Spacer(),
+              if (onActionTap != null)
+                GestureDetector(
+                  onTap: onActionTap,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Icon(Icons.add, color: color, size: 16),
+                  ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(Icons.trending_up, color: color, size: 12),
+                ),
             ],
           ),
           const SizedBox(height: 12),
@@ -611,11 +841,17 @@ class DashboardPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: AppColors.warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.warning, size: 16),
+                    Icon(
+                      Icons.info_outline,
+                      color: AppColors.warning,
+                      size: 16,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -633,35 +869,79 @@ class DashboardPage extends ConsumerWidget {
               const SizedBox(height: 16),
               dashboardAsync.when(
                 data: (dashboardData) {
+                  final myAddress = walletState.maybeWhen(
+                    connected: (wallet) => wallet.address.toLowerCase(),
+                    orElse: () => '',
+                  );
+                  final myShortAddress = myAddress.length > 10
+                      ? '${myAddress.substring(0, 6)}...${myAddress.substring(myAddress.length - 4)}'
+                      : myAddress;
+
+                  // Check if vow exists (partnerA not null)
+                  final hasVow = dashboardData.partnerA != null;
+
+                  if (!hasVow) {
+                    // No vow yet - show connected wallet as "You"
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _buildPartnerProfileCard(
+                            name: myShortAddress.isNotEmpty
+                                ? '$myShortAddress (You)'
+                                : 'You',
+                            address: myAddress,
+                            status: myAddress.isNotEmpty
+                                ? 'CONNECTED'
+                                : 'NOT CONNECTED',
+                            isCertified: false,
+                            isYou: true,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildPartnerProfileCard(
+                            name: 'Partner',
+                            address: '',
+                            status: 'BELUM ADA VOW',
+                            isCertified: false,
+                            isYou: false,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  // Has vow - determine which partner is "You"
+                  final isPartnerA =
+                      dashboardData.partnerA!.address.toLowerCase() ==
+                      myAddress;
+                  final youPartner = isPartnerA
+                      ? dashboardData.partnerA!
+                      : dashboardData.partnerB!;
+                  final otherPartner = isPartnerA
+                      ? dashboardData.partnerB!
+                      : dashboardData.partnerA!;
+
                   return Row(
                     children: [
-                      // Partner A (You)
                       Expanded(
                         child: _buildPartnerProfileCard(
-                          name: walletState.maybeWhen(
-                            connected: (wallet) => 'Alice (You)',
-                            orElse: () => 'Partner A (You)',
-                          ),
-                          address: walletState.maybeWhen(
-                            connected: (wallet) => wallet.address,
-                            orElse: () => '',
-                          ),
-                          status: walletState.maybeWhen(
-                            connected: (_) => 'CONNECTED',
-                            orElse: () => 'NOT CONNECTED',
-                          ),
-                          isCertified: dashboardData.partner?.isCertified ?? false,
+                          name: '${youPartner.name} (You)',
+                          address: youPartner.address,
+                          status: 'CONNECTED',
+                          isCertified: youPartner.isCertified,
                           isYou: true,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Partner B
                       Expanded(
                         child: _buildPartnerProfileCard(
-                          name: dashboardData.partner?.name ?? 'Partner B',
-                          address: dashboardData.partner?.address ?? '',
-                          status: dashboardData.partner != null ? 'CERTIFIED' : 'LINK DITUNGGU',
-                          isCertified: dashboardData.partner?.isCertified ?? false,
+                          name: otherPartner.name,
+                          address: otherPartner.address,
+                          status: otherPartner.isCertified
+                              ? 'SIGNED'
+                              : 'PENDING',
+                          isCertified: otherPartner.isCertified,
                           isYou: false,
                         ),
                       ),
@@ -677,10 +957,9 @@ class DashboardPage extends ConsumerWidget {
                 ),
                 error: (error, stack) => Row(
                   children: [
-                    // Partner A (You) - Still show when error
                     Expanded(
                       child: _buildPartnerProfileCard(
-                        name: 'Partner A (You)',
+                        name: 'You',
                         address: walletState.maybeWhen(
                           connected: (wallet) => wallet.address,
                           orElse: () => '',
@@ -694,10 +973,9 @@ class DashboardPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Partner B - Error state
                     Expanded(
                       child: _buildPartnerProfileCard(
-                        name: 'Partner B',
+                        name: 'Partner',
                         address: '',
                         status: 'LINK DITUNGGU',
                         isCertified: false,
@@ -724,8 +1002,8 @@ class DashboardPage extends ConsumerWidget {
     final statusColor = status == 'CONNECTED' || status == 'CERTIFIED'
         ? AppColors.success
         : status == 'NOT CONNECTED' || status == 'LINK DITUNGGU'
-            ? AppColors.neutral400
-            : AppColors.info;
+        ? AppColors.neutral400
+        : AppColors.info;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -743,7 +1021,11 @@ class DashboardPage extends ConsumerWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: isYou ? AppColors.info : (isCertified ? AppColors.success : AppColors.neutral300),
+                  color: isYou
+                      ? AppColors.info
+                      : (isCertified
+                            ? AppColors.success
+                            : AppColors.neutral300),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -759,7 +1041,10 @@ class DashboardPage extends ConsumerWidget {
               ),
               if (isCertified)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -794,10 +1079,7 @@ class DashboardPage extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Address:',
-            style: TextStyle(
-              fontSize: 10,
-              color: AppColors.textTertiary,
-            ),
+            style: TextStyle(fontSize: 10, color: AppColors.textTertiary),
           ),
           const SizedBox(height: 4),
           Text(
@@ -885,10 +1167,7 @@ class DashboardPage extends ConsumerWidget {
             child: Center(
               child: Text(
                 'Chart: Pertumbuhan Aset',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -901,9 +1180,16 @@ class DashboardPage extends ConsumerWidget {
     required String totalShared,
     required String partnerAAmount,
     required String partnerBAmount,
+    required double partnerAPercentage,
+    required double partnerBPercentage,
   }) {
-    final hasBalance = double.tryParse(totalShared) != null && double.parse(totalShared) > 0;
-    
+    final hasBalance =
+        double.tryParse(totalShared) != null && double.parse(totalShared) > 0;
+    final hasContributions =
+        double.tryParse(partnerAAmount) != null &&
+        double.tryParse(partnerBAmount) != null &&
+        (double.parse(partnerAAmount) > 0 || double.parse(partnerBAmount) > 0);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -913,42 +1199,77 @@ class DashboardPage extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          Row(
+          const SizedBox(height: 16),
+          // Donut Chart with real percentages
+          Stack(
+            alignment: Alignment.center,
             children: [
-              IconButton(
-                icon: const Icon(Icons.refresh, size: 20),
-                onPressed: () {},
-                color: AppColors.textSecondary,
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: CustomPaint(
+                  painter: DonutChartPainter(
+                    partnerAPercentage: hasBalance ? partnerAPercentage : 50.0,
+                    partnerBPercentage: hasBalance ? partnerBPercentage : 50.0,
+                    hasData: hasBalance,
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (hasBalance) ...[
+                    Text(
+                      'A: ${partnerAPercentage.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.info,
+                      ),
+                    ),
+                    Text(
+                      'B: ${partnerBPercentage.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ] else ...[
+                    Text(
+                      '0%',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      'No Data',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Donut Chart Placeholder
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.neutral200,
-                width: 20,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                hasBalance ? '50%' : '0%',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ),
-          ),
           const SizedBox(height: 24),
-          _buildDistribusiItem('Partner A (You)', '50.0%', '$partnerAAmount ETH', AppColors.info),
+          _buildDistribusiItem(
+            'Partner A (You)',
+            '${partnerAPercentage.toStringAsFixed(1)}%',
+            '$partnerAAmount ETH',
+            AppColors.info,
+          ),
           const SizedBox(height: 12),
-          _buildDistribusiItem('Partner B', '50.0%', '$partnerBAmount ETH', AppColors.error),
+          _buildDistribusiItem(
+            'Partner B',
+            '${partnerBPercentage.toStringAsFixed(1)}%',
+            '$partnerBAmount ETH',
+            AppColors.error,
+          ),
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 12),
@@ -957,23 +1278,46 @@ class DashboardPage extends ConsumerWidget {
             children: [
               const Text(
                 'Total Brankas Bersama:',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
               Text(
                 '$totalShared ETH',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: hasBalance
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          if (!hasBalance)
+          if (!hasBalance && !hasContributions)
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.info.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: AppColors.info, size: 16),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Belum ada deposit ke brankas bersama. Transfer ETH ke brankas bersama untuk melihat distribusi.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.info,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else if (!hasBalance)
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -986,7 +1330,7 @@ class DashboardPage extends ConsumerWidget {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'Belum ada deposit ke brankas bersama',
+                      'Data kontribusi tidak sinkron. Coba refresh atau periksa koneksi blockchain.',
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.warning,
@@ -1002,16 +1346,18 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildDistribusiItem(String name, String percentage, String amount, Color color) {
+  Widget _buildDistribusiItem(
+    String name,
+    String percentage,
+    String amount,
+    Color color,
+  ) {
     return Row(
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1027,10 +1373,7 @@ class DashboardPage extends ConsumerWidget {
               ),
               Text(
                 'Senilai $amount',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppColors.textTertiary,
-                ),
+                style: TextStyle(fontSize: 10, color: AppColors.textTertiary),
               ),
             ],
           ),
@@ -1044,6 +1387,233 @@ class DashboardPage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildVowCard(VowModel vow) {
+    // VowStatus: 0=Draft, 1=PendingSignatures, 2=Active, 3=Breached, 4=Resolved, 5=Terminated
+    final statusText = vow.status == 0
+        ? 'Draft'
+        : vow.status == 1
+        ? 'Pending'
+        : vow.status == 2
+        ? 'Active'
+        : vow.status == 3
+        ? 'Breached'
+        : vow.status == 4
+        ? 'Resolved'
+        : vow.status == 5
+        ? 'Terminated'
+        : 'Unknown';
+
+    final statusColor = vow.status == 2
+        ? AppColors
+              .success // Active
+        : vow.status == 0
+        ? AppColors
+              .warning // Draft
+        : vow.status == 1
+        ? AppColors
+              .info // Pending
+        : vow.status == 4
+        ? AppColors
+              .info // Resolved
+        : AppColors.error; // Breached/Terminated
+
+    final partnerAShort = _getShortAddress(vow.partnerA);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.neutral200),
+      ),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.description, color: AppColors.primary, size: 20),
+          ),
+          const SizedBox(width: 12),
+
+          // Content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Vow #${vow.id}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Partner A: $partnerAShort',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Status badges
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Partner signed badges
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (vow.partnerASigned)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: AppColors.success.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.success,
+                            size: 10,
+                          ),
+                          const SizedBox(width: 3),
+                          const Text(
+                            'A Signed',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: AppColors.success,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (vow.partnerASigned && vow.partnerBSigned)
+                    const SizedBox(width: 4),
+                  if (vow.partnerBSigned)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: AppColors.success.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.success,
+                            size: 10,
+                          ),
+                          const SizedBox(width: 3),
+                          const Text(
+                            'B Signed',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: AppColors.success,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              if (vow.partnerASigned || vow.partnerBSigned)
+                const SizedBox(height: 6),
+              // Status badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  statusText,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              // Aktif badge (like in web screenshot)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  'Aktif',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Action button
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () {
+              // Navigate to detail page
+            },
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                ),
+              ),
+              child: const Text(
+                'SELESAI',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1081,6 +1651,11 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
+  String _getShortAddress(String address) {
+    if (address.length < 10) return address;
+    return '${address.substring(0, 6)}...${address.substring(address.length - 4)}';
+  }
+
   Widget _buildAksiCepatCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1100,23 +1675,11 @@ class DashboardPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildAksiCepatItem(
-            Icons.add,
-            'Buat Perjanjian Baru',
-            () {},
-          ),
+          _buildAksiCepatItem(Icons.add, 'Buat Perjanjian Baru', () {}),
           const SizedBox(height: 12),
-          _buildAksiCepatItem(
-            Icons.folder_outlined,
-            'Kelola Brankas',
-            () {},
-          ),
+          _buildAksiCepatItem(Icons.folder_outlined, 'Kelola Brankas', () {}),
           const SizedBox(height: 12),
-          _buildAksiCepatItem(
-            Icons.image_outlined,
-            'Virtualisasi Aset',
-            () {},
-          ),
+          _buildAksiCepatItem(Icons.image_outlined, 'Virtualisasi Aset', () {}),
         ],
       ),
     );
@@ -1152,4 +1715,76 @@ class DashboardPage extends ConsumerWidget {
       ),
     );
   }
+
+  void _showTransferToSharedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => const TransferToSharedDialog(),
+    );
+  }
+}
+
+/// Custom Painter for Donut Chart
+class DonutChartPainter extends CustomPainter {
+  final double partnerAPercentage;
+  final double partnerBPercentage;
+  final bool hasData;
+
+  DonutChartPainter({
+    required this.partnerAPercentage,
+    required this.partnerBPercentage,
+    required this.hasData,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    final strokeWidth = 20.0;
+
+    // Background circle
+    final backgroundPaint = Paint()
+      ..color = AppColors.neutral200
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    canvas.drawCircle(center, radius - strokeWidth / 2, backgroundPaint);
+
+    if (hasData && (partnerAPercentage > 0 || partnerBPercentage > 0)) {
+      // Partner A arc (blue)
+      final partnerAPaint = Paint()
+        ..color = AppColors.info
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+
+      final partnerAAngle = (partnerAPercentage / 100) * 2 * math.pi;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+        -math.pi / 2, // Start from top
+        partnerAAngle,
+        false,
+        partnerAPaint,
+      );
+
+      // Partner B arc (red)
+      final partnerBPaint = Paint()
+        ..color = AppColors.error
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+
+      final partnerBAngle = (partnerBPercentage / 100) * 2 * math.pi;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+        -math.pi / 2 + partnerAAngle, // Start after Partner A
+        partnerBAngle,
+        false,
+        partnerBPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
